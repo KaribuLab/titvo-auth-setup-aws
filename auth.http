@@ -1,5 +1,5 @@
-# Run task on Github
-# @name runScanGithub
+# Run auth setup
+# @name runAuthSetup
 
 @apiKey = {{$dotenv API_KEY}}
 @user_id = {{$dotenv USER_ID}}
