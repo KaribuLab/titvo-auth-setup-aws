@@ -34,7 +34,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event: APIGatewayProxyEv
     const input: AuthSetupInputDto = {
       apiKey,
       source: body.source,
-      userId: body.args.userId
+      userId: body.args.user_id
     }
     const output = await authSetupService.process(input)
     return {
