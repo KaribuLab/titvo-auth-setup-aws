@@ -26,7 +26,7 @@ app.get(ParameterService)
 const authSetupService = app.get(AuthSetupService)
 
 export const handler: APIGatewayProxyHandlerV2 = async (event: APIGatewayProxyEventV2, context: Context, callback: APIGatewayProxyCallbackV2): Promise<APIGatewayProxyResultV2> => {
-  logger.debug(`Received event: ${JSON.stringify(event)}`)
+  logger.debug(`Received event: ${event.body as string}`)
   try {
     const apiKey = findHeaderCaseInsensitive(event.headers, 'x-api-key')
     const body = JSON.parse(event.body ?? '{}')
