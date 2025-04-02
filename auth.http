@@ -1,0 +1,16 @@
+# Run task on Github
+# @name runScanGithub
+
+@apiKey = {{$dotenv API_KEY}}
+@user_id = {{$dotenv USER_ID}}
+
+POST {{apiUrl}}/auth/setup
+Content-Type: application/json
+X-API-Key: {{apiKey}}
+
+{
+  "source": "cli",
+  "args": {
+    "user_id": "{{user_id}}"
+  }
+}
