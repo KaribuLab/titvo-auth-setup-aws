@@ -6,7 +6,6 @@ import { LoggerModule } from 'nestjs-pino'
 import { SecretModule } from '@aws/secret'
 @Module({
   imports: [
-    SetupModule,
     LoggerModule.forRoot({
       pinoHttp: {
         level: process.env.LOG_LEVEL ?? 'info',
@@ -29,7 +28,8 @@ import { SecretModule } from '@aws/secret'
     SecretModule.forRoot({
       awsStage: process.env.AWS_STAGE ?? 'prod',
       awsEndpoint: process.env.AWS_ENDPOINT ?? 'http://localhost:4566'
-    })
+    }),
+    SetupModule
   ]
 })
 export class AppModule {}
