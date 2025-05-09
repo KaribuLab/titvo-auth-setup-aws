@@ -1,14 +1,12 @@
 import { NestFactory } from '@nestjs/core'
 import { Context, APIGatewayProxyHandlerV2, APIGatewayProxyCallbackV2, APIGatewayProxyResultV2, APIGatewayProxyEventV2 } from 'aws-lambda'
-import { AuthSetupService } from './auth-setup/auth-setup.service'
 import { AppModule } from './app.module'
 import { Logger } from 'nestjs-pino'
-import { ParameterService } from '@shared'
 import { HttpStatus, INestApplicationContext, Logger as NestLogger } from '@nestjs/common'
 import { findHeaderCaseInsensitive } from './utils/headers'
-import { AuthSetupInputDto } from './auth-setup/auth-setup.dto'
-import { ApiKeyError, InvalidApiKeyError, UserNotFoundError } from './api-key'
-
+import { SetupUseCase, SetupInputDto } from '@titvo/setup'
+import { InvalidApiKeyError } from '@titvo/auth'
+import { UserNotFoundError } from '@setup/app/setup/setup.error'
 const logger = new NestLogger('AuthSetupHandler')
 
 async function initApp (): Promise<INestApplicationContext> {
@@ -22,8 +20,8 @@ async function initApp (): Promise<INestApplicationContext> {
 }
 
 const app = await initApp()
-app.get(ParameterService)
-const authSetupService = app.get(AuthSetupService)
+
+const setupUseCase = app.get(SetupUseCase)
 
 export const handler: APIGatewayProxyHandlerV2 = async (event: APIGatewayProxyEventV2, context: Context, callback: APIGatewayProxyCallbackV2): Promise<APIGatewayProxyResultV2> => {
   logger.debug(`Received event: ${event.body as string}`)
@@ -31,12 +29,12 @@ export const handler: APIGatewayProxyHandlerV2 = async (event: APIGatewayProxyEv
     const apiKey = findHeaderCaseInsensitive(event.headers, 'x-api-key')
     const body = JSON.parse(event.body ?? '{}')
     logger.log(`Received event: [source=${body.source as string}, args=${JSON.stringify(body.args)}]`)
-    const input: AuthSetupInputDto = {
+    const input: SetupInputDto = {
       apiKey,
       source: body.source,
       userId: body.args.user_id
     }
-    const output = await authSetupService.process(input)
+    const output = await setupUseCase.execute(input)
     return {
       statusCode: HttpStatus.OK,
       headers: {
@@ -53,7 +51,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event: APIGatewayProxyEv
     }
 
     // Check if the error is related to API Key authentication
-    if (error instanceof ApiKeyError || error instanceof UserNotFoundError || error instanceof InvalidApiKeyError) {
+    if (error instanceof UserNotFoundError || error instanceof InvalidApiKeyError) {
       return {
         statusCode: HttpStatus.UNAUTHORIZED,
         headers: {

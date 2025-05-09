@@ -1,26 +1,28 @@
+import { ConfigModule } from '@aws/config'
 import { Module } from '@nestjs/common'
-import { ParameterModule } from '@shared'
-import { AuthSetupModule } from './auth-setup/auth-setup.module'
-import { SecretManagerModule } from '../shared/src/secret-manager/secret-manager.module'
-
+import { SetupModule } from '@infrastructure/setup/setup.module'
+import { pino } from 'pino'
+import { LoggerModule } from 'nestjs-pino'
 @Module({
   imports: [
-    AuthSetupModule,
-    SecretManagerModule.forRoot({
-      ttl: 60,
-      awsEndpoint: process.env.AWS_ENDPOINT ?? 'http://localhost:4566',
-      awsStage: process.env.AWS_STAGE ?? 'prod',
-      serviceName: 'auth-setup'
+    SetupModule,
+    LoggerModule.forRoot({
+      pinoHttp: {
+        level: process.env.LOG_LEVEL ?? 'info',
+        timestamp: pino.stdTimeFunctions.isoTime,
+        formatters: {
+          level (label: string): { level: string } {
+            return { level: label }
+          }
+        }
+      }
     }),
-    ParameterModule.forRoot({
-      parameterServiceOptions: {
-        ttl: 60,
+    ConfigModule.forRoot({
+      configOptions: {
         awsEndpoint: process.env.AWS_ENDPOINT ?? 'http://localhost:4566',
         awsStage: process.env.AWS_STAGE ?? 'prod',
-        parameterBasePath: '/tvo/security-scan',
-        serviceName: 'auth-setup'
-      },
-      isGlobal: true
+        tableName: process.env.CONFIG_TABLE_NAME ?? 'api-key-table'
+      }
     })
   ]
 })

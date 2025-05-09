@@ -32,6 +32,10 @@
     "typescript": "5.5.4"
   },
   "dependencies": {
+    "@titvo/setup": "file:setup",
+    "@titvo/shared": "file:shared",
+    "@titvo/auth": "file:auth",
+    "@titvo/aws": "file:lib/aws",
     "@aws-sdk/client-batch": "3.726.1",
     "@aws-sdk/client-dynamodb": "3.670.0",
     "@aws-sdk/client-lambda": "3.682.0",
