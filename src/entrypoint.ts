@@ -40,7 +40,11 @@ export const handler: APIGatewayProxyHandlerV2 = async (event: APIGatewayProxyEv
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(output)
+      body: JSON.stringify({
+        message: 'success',
+        task_endpoint: output.taskEndpoint,
+        encrypted_api_key: output.encryptedApiKey
+      })
     }
   } catch (error) {
     // Log error details with stack trace if available
