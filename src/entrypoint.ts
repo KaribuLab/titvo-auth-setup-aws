@@ -74,7 +74,10 @@ export const handler: APIGatewayProxyHandlerV2 = async (event: APIGatewayProxyEv
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ message: 'Internal server error' })
+      body: JSON.stringify({
+        message: 'Internal server error',
+        error: error instanceof Error ? error.message : String(error)
+      })
     }
   }
 }
