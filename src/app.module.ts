@@ -22,7 +22,8 @@ import { LoggerModule } from 'nestjs-pino'
         awsEndpoint: process.env.AWS_ENDPOINT ?? 'http://localhost:4566',
         awsStage: process.env.AWS_STAGE ?? 'prod',
         tableName: process.env.CONFIG_TABLE_NAME ?? 'api-key-table'
-      }
+      },
+      isGlobal: true
     })
   ]
 })
