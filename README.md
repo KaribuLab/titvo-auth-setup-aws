@@ -80,6 +80,8 @@ Para desplegar el servicio, se utiliza Terragrunt. La configuración se encuentr
   ```shell
   git clone https://github.com/KaribuLab/titvo-auth-setup.git
   cd titvo-auth-setup
+  git submodule init
+  git submodule update
   ```
 
 2. Primero necesitará cargar las variables ambiente con las credenciales de AWS.
