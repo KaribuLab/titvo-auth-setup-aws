@@ -9,14 +9,6 @@ Este repositorio contiene la implementación de un sistema de autenticación bas
 - Integración con servicios de AWS
 - Compatible con NestJS
 
-## Uso del Template
-
-Para utilizar este template en un nuevo proyecto, ejecuta el siguiente comando:
-
-```shell
-kli project git@github.com:KaribuLab/titvo-base-lambda-apigateway.git
-```
-
 ## Requisitos
 
 - [NVM](https://github.com/nvm-sh/nvm)
@@ -78,6 +70,35 @@ Para el desarrollo local, se utiliza LocalStack. La configuración se encuentra 
 - AWS Lambda como entorno de ejecución
 - DynamoDB para almacenamiento de datos
 - API Gateway para exposición del servicio
+
+## Despliegue
+
+Para desplegar el servicio, se utiliza Terragrunt. La configuración se encuentra en el archivo `terragrunt.hcl`.
+
+Primero necesitará cargar las variables ambiente con las credenciales de AWS.
+
+```shell
+export AWS_ACCESS_KEY_ID="..."
+export AWS_SECRET_ACCESS_KEY="..."
+export AWS_SESSION_TOKEN="..."
+```
+
+O creando un archivo `.env` en la raíz del proyecto con las variables de entorno.
+
+```shell
+export AWS_ACCESS_KEY_ID="..."
+export AWS_SECRET_ACCESS_KEY="..."
+export AWS_SESSION_TOKEN="..."
+```
+
+Luego, se puede proceder a instalar las dependencias y ejecutar el despliegue.
+
+```shell
+npm install
+npm run build
+cd aws
+terragrunt run-all apply
+```
 
 ## Licencia
 
