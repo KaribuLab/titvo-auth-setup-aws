@@ -2,9 +2,10 @@
   "name": "tvo-auth-setup",
   "version": "0.1.0",
   "main": "main.js",
-  "eslintConfig": {
-    "extends": [
-      "ts-standard"
+  "ts-standard": {
+    "ignore": [
+      "test",
+      "vite.config.ts"
     ]
   },
   "scripts": {
