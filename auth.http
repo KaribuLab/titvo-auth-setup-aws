@@ -4,6 +4,8 @@
 @apiKey = {{$dotenv API_KEY}}
 @user_id = {{$dotenv USER_ID}}
 
+@apiUrl = {{$dotenv API_URL}}
+
 POST {{apiUrl}}/auth/setup
 Content-Type: application/json
 X-API-Key: {{apiKey}}
