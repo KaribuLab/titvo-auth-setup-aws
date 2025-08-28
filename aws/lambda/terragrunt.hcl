@@ -30,7 +30,6 @@ dependency parameters {
       "${local.base_path}/infra/dynamo-configuration-table-arn"  = "arn:aws:dynamodb:us-east-1:000000000000:table/tvo-github-security-scan-configuration-table-test"
       "${local.base_path}/infra/dynamo-api-key-table-name"       = "tvo-github-security-scan-api-key-table-prod"
       "${local.base_path}/infra/dynamo-api-key-table-arn"        = "arn:aws:dynamodb:us-east-1:000000000000:table/tvo-github-security-scan-api-key-table-prod"
-      "${local.base_path}/infra/secret-manager-arn"              = "arn:aws:secretsmanager:us-east-1:000000000000:secret:/tvo/security-scan/prod"
     }
   }
 }

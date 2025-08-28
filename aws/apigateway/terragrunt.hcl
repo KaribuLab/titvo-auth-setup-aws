@@ -24,7 +24,7 @@ dependency parameters {
   config_path = "${get_parent_terragrunt_dir()}/aws/parameter"
   mock_outputs = {
     parameters = {
-      "/tvo/security-scan/prod/infra/api-gateway-account-id" = "api-gateway-account-id"
+      "${local.base_path}/infra/api-gateway-account-id" = "api-gateway-account-id"
     }
   }
 }
@@ -37,7 +37,7 @@ dependency lambda {
 }
 
 inputs = {
-  api_gateway_id = dependency.parameters.outputs.parameters["/tvo/security-scan/prod/infra/api-gateway-account-id"]
+  api_gateway_id = dependency.parameters.outputs.parameters["${local.base_path}/infra/api-gateway-account-id"]
   routes = [
     {
       path          = "/auth/setup"
