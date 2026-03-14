@@ -24,14 +24,30 @@ dependency parameters {
   config_path = "${get_parent_terragrunt_dir()}/aws/parameter"
   mock_outputs = {
     parameters = {
-      "${local.base_path}/infra/secret-manager-arn"              = "arn:aws:secretsmanager:us-east-1:000000000000:secret:/tvo/security-scan/prod"
-      "${local.base_path}/infra/encryption-key-name"             = "tvo-github-security-scan-encryption-key-prod"
-      "${local.base_path}/infra/dynamo-configuration-table-name" = "tvo-github-security-scan-configuration-table-prod"
-      "${local.base_path}/infra/dynamo-configuration-table-arn"  = "arn:aws:dynamodb:us-east-1:000000000000:table/tvo-github-security-scan-configuration-table-test"
-      "${local.base_path}/infra/dynamo-api-key-table-name"       = "tvo-github-security-scan-api-key-table-prod"
-      "${local.base_path}/infra/dynamo-api-key-table-arn"        = "arn:aws:dynamodb:us-east-1:000000000000:table/tvo-github-security-scan-api-key-table-prod"
+      "${local.base_path}/infra/secret/manager/arn"          = "arn:aws:secretsmanager:us-east-1:000000000000:secret:/tvo/security-scan/prod"
+      "${local.base_path}/infra/kms/encryption-key-name"     = "tvo-github-security-scan-encryption-key-prod"
+      "${local.base_path}/infra/dynamo/parameter-table-name" = "tvo-github-security-scan-configuration-table-prod"
+      "${local.base_path}/infra/dynamo/parameter-table-arn"  = "arn:aws:dynamodb:us-east-1:000000000000:table/tvo-github-security-scan-configuration-table-test"
+      "${local.base_path}/infra/dynamo/apikey-table-name"    = "tvo-github-security-scan-api-key-table-prod"
+      "${local.base_path}/infra/dynamo/apikey-table-arn"     = "arn:aws:dynamodb:us-east-1:000000000000:table/tvo-github-security-scan-api-key-table-prod"
     }
   }
+}
+
+locals {
+  parameters = dependency.parameters.outputs.parameters
+
+  dynamo_api_key_table_arn = local.parameters["${local.base_path}/infra/dynamo/apikey-table-arn"]
+
+  dynamo_api_key_table_name = local.parameters["${local.base_path}/infra/dynamo/apikey-table-name"]
+
+  dynamo_configuration_table_arn = local.parameters["${local.base_path}/infra/dynamo/parameter-table-arn"]
+
+  dynamo_configuration_table_name = local.parameters["${local.base_path}/infra/dynamo/parameter-table-name"]
+
+  secret_manager_arn = local.parameters["${local.base_path}/infra/secret/manager/arn"]
+
+  encryption_key_name = local.parameters["${local.base_path}/infra/kms/encryption-key-name"]
 }
 
 inputs = {
@@ -54,8 +70,8 @@ inputs = {
           "dynamodb:Query"
         ],
         "Resource" : [
-          dependency.parameters.outputs.parameters["${local.base_path}/infra/dynamo-api-key-table-arn"],
-          "${dependency.parameters.outputs.parameters["${local.base_path}/infra/dynamo-api-key-table-arn"]}/index/*"
+          local.dynamo_api_key_table_arn,
+          "${local.dynamo_api_key_table_arn}/index/*"
         ]
       },
       {
@@ -64,7 +80,7 @@ inputs = {
           "dynamodb:GetItem",
         ],
         "Resource" : [
-          "${dependency.parameters.outputs.parameters["${local.base_path}/infra/dynamo-configuration-table-arn"]}"
+          "${local.dynamo_configuration_table_arn}"
         ]
       },
       {
@@ -83,15 +99,15 @@ inputs = {
           "secretsmanager:GetSecretValue"
         ],
         "Resource" : [
-          "${dependency.parameters.outputs.parameters["${local.base_path}/infra/secret-manager-arn"]}"
+          "${local.secret_manager_arn}"
         ]
       }
     ]
   })
   environment_variables = {
-    CONFIG_TABLE_NAME   = dependency.parameters.outputs.parameters["${local.base_path}/infra/dynamo-configuration-table-name"]
-    API_KEY_TABLE_NAME  = dependency.parameters.outputs.parameters["${local.base_path}/infra/dynamo-api-key-table-name"]
-    ENCRYPTION_KEY_NAME = dependency.parameters.outputs.parameters["${local.base_path}/infra/encryption-key-name"]
+    CONFIG_TABLE_NAME   = local.dynamo_configuration_table_name
+    API_KEY_TABLE_NAME  = local.dynamo_api_key_table_name
+    ENCRYPTION_KEY_NAME = local.encryption_key_name
     AWS_STAGE           = local.serverless.locals.stage
     LOG_LEVEL           = "debug"
   }

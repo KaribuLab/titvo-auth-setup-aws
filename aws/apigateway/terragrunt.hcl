@@ -24,7 +24,7 @@ dependency parameters {
   config_path = "${get_parent_terragrunt_dir()}/aws/parameter"
   mock_outputs = {
     parameters = {
-      "${local.base_path}/infra/api-gateway-account-id" = "api-gateway-account-id"
+      "${local.base_path}/infra/apigateway/task/api_gateway_id" = "api-gateway-account-id"
     }
   }
 }
@@ -36,8 +36,13 @@ dependency lambda {
   }
 }
 
+locals {
+  parameters     = dependency.parameters.outputs.parameters
+  api_gateway_id = local.parameters["${local.base_path}/infra/apigateway/task/api_gateway_id"]
+}
+
 inputs = {
-  api_gateway_id = dependency.parameters.outputs.parameters["${local.base_path}/infra/api-gateway-account-id"]
+  api_gateway_id = local.api_gateway_id
   routes = [
     {
       path          = "/auth/setup"
