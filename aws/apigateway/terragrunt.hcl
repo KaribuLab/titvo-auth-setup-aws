@@ -7,8 +7,6 @@ locals {
   function_name = "${local.serverless.locals.service_name}-lambda-${local.serverless.locals.stage}"
   common_tags   = local.serverless.locals.common_tags
   base_path     = "${local.serverless.locals.parameter_path}/${local.serverless.locals.stage}"
-  parameters    = dependency.parameters.outputs.parameters
-  api_gateway_id = local.parameters["${local.base_path}/infra/apigateway/task/api_gateway_id"]
 }
 
 include {
@@ -39,7 +37,7 @@ dependency lambda {
 }
 
 inputs = {
-  api_gateway_id = local.api_gateway_id
+  api_gateway_id = dependency.parameters.outputs.parameters["${local.base_path}/infra/apigateway/task/api_gateway_id"]
   routes = [
     {
       path          = "/auth/setup"

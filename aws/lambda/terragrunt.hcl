@@ -7,16 +7,6 @@ locals {
   function_name = "${local.serverless.locals.service_name}-lambda-${local.serverless.locals.stage}"
   common_tags   = local.serverless.locals.common_tags
   base_path     = "${local.serverless.locals.parameter_path}/${local.serverless.locals.stage}"
-  parameters    = dependency.parameters.outputs.parameters
-
-  dynamo_api_key_table_arn  = local.parameters["${local.base_path}/infra/dynamo/apikey-table-arn"]
-  dynamo_api_key_table_name = local.parameters["${local.base_path}/infra/dynamo/apikey-table-name"]
-
-  dynamo_configuration_table_arn  = local.parameters["${local.base_path}/infra/dynamo/parameter-table-arn"]
-  dynamo_configuration_table_name = local.parameters["${local.base_path}/infra/dynamo/parameter-table-name"]
-
-  secret_manager_arn = local.parameters["${local.base_path}/infra/secret/manager/arn"]
-  encryption_key_name = local.parameters["${local.base_path}/infra/kms/encryption-key-name"]
 }
 
 include {
@@ -64,8 +54,8 @@ inputs = {
           "dynamodb:Query"
         ],
         "Resource" : [
-          local.dynamo_api_key_table_arn,
-          "${local.dynamo_api_key_table_arn}/index/*"
+          dependency.parameters.outputs.parameters["${local.base_path}/infra/dynamo/apikey-table-arn"],
+          "${dependency.parameters.outputs.parameters["${local.base_path}/infra/dynamo/apikey-table-arn"]}/index/*"
         ]
       },
       {
@@ -74,7 +64,7 @@ inputs = {
           "dynamodb:GetItem",
         ],
         "Resource" : [
-          "${local.dynamo_configuration_table_arn}"
+          dependency.parameters.outputs.parameters["${local.base_path}/infra/dynamo/parameter-table-arn"]
         ]
       },
       {
@@ -93,15 +83,15 @@ inputs = {
           "secretsmanager:GetSecretValue"
         ],
         "Resource" : [
-          "${local.secret_manager_arn}"
+          dependency.parameters.outputs.parameters["${local.base_path}/infra/secret/manager/arn"]
         ]
       }
     ]
   })
   environment_variables = {
-    CONFIG_TABLE_NAME   = local.dynamo_configuration_table_name
-    API_KEY_TABLE_NAME  = local.dynamo_api_key_table_name
-    ENCRYPTION_KEY_NAME = local.encryption_key_name
+    CONFIG_TABLE_NAME   = dependency.parameters.outputs.parameters["${local.base_path}/infra/dynamo/parameter-table-name"]
+    API_KEY_TABLE_NAME  = dependency.parameters.outputs.parameters["${local.base_path}/infra/dynamo/apikey-table-name"]
+    ENCRYPTION_KEY_NAME = dependency.parameters.outputs.parameters["${local.base_path}/infra/kms/encryption-key-name"]
     AWS_STAGE           = local.serverless.locals.stage
     LOG_LEVEL           = "debug"
   }
