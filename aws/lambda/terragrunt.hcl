@@ -7,6 +7,16 @@ locals {
   function_name = "${local.serverless.locals.service_name}-lambda-${local.serverless.locals.stage}"
   common_tags   = local.serverless.locals.common_tags
   base_path     = "${local.serverless.locals.parameter_path}/${local.serverless.locals.stage}"
+  parameters    = dependency.parameters.outputs.parameters
+
+  dynamo_api_key_table_arn  = local.parameters["${local.base_path}/infra/dynamo/apikey-table-arn"]
+  dynamo_api_key_table_name = local.parameters["${local.base_path}/infra/dynamo/apikey-table-name"]
+
+  dynamo_configuration_table_arn  = local.parameters["${local.base_path}/infra/dynamo/parameter-table-arn"]
+  dynamo_configuration_table_name = local.parameters["${local.base_path}/infra/dynamo/parameter-table-name"]
+
+  secret_manager_arn = local.parameters["${local.base_path}/infra/secret/manager/arn"]
+  encryption_key_name = local.parameters["${local.base_path}/infra/kms/encryption-key-name"]
 }
 
 include {
@@ -32,22 +42,6 @@ dependency parameters {
       "${local.base_path}/infra/dynamo/apikey-table-arn"     = "arn:aws:dynamodb:us-east-1:000000000000:table/tvo-github-security-scan-api-key-table-prod"
     }
   }
-}
-
-locals {
-  parameters = dependency.parameters.outputs.parameters
-
-  dynamo_api_key_table_arn = local.parameters["${local.base_path}/infra/dynamo/apikey-table-arn"]
-
-  dynamo_api_key_table_name = local.parameters["${local.base_path}/infra/dynamo/apikey-table-name"]
-
-  dynamo_configuration_table_arn = local.parameters["${local.base_path}/infra/dynamo/parameter-table-arn"]
-
-  dynamo_configuration_table_name = local.parameters["${local.base_path}/infra/dynamo/parameter-table-name"]
-
-  secret_manager_arn = local.parameters["${local.base_path}/infra/secret/manager/arn"]
-
-  encryption_key_name = local.parameters["${local.base_path}/infra/kms/encryption-key-name"]
 }
 
 inputs = {
