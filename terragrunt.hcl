@@ -10,7 +10,7 @@ generate "provider" {
     required_providers {
       aws = {
         source  = "hashicorp/aws"
-        version = "${local.serverless.locals.provider_version}"
+        version = "6.46.0"
       }
     }
   }
