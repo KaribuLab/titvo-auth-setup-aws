@@ -7,6 +7,9 @@
     "rootDir": "./",
     "moduleResolution": "Node",
     "paths": {
+      "@titvo/shared": [
+        "./shared/index.ts"
+      ],
       "@infrastructure/*": [
         "./src/infrastructure/*"
       ],
