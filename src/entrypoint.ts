@@ -5,8 +5,6 @@ import { Logger } from 'nestjs-pino'
 import { HttpStatus, INestApplicationContext, Logger as NestLogger } from '@nestjs/common'
 import { findHeaderCaseInsensitive } from './utils/headers'
 import { SetupUseCase, SetupInputDto } from '@titvo/setup'
-import { InvalidApiKeyError } from '@titvo/auth'
-import { UserNotFoundError } from '@setup/app/setup/setup.error'
 const logger = new NestLogger('AuthSetupHandler')
 
 async function initApp (): Promise<INestApplicationContext> {
@@ -27,12 +25,12 @@ export const handler: APIGatewayProxyHandlerV2 = async (event: APIGatewayProxyEv
   logger.debug(`Received event: ${event.body as string}`)
   try {
     const apiKey = findHeaderCaseInsensitive(event.headers, 'x-api-key')
-    const body = JSON.parse(event.body ?? '{}')
-    logger.log(`Received event: [source=${body.source as string}, args=${JSON.stringify(body.args)}]`)
+    const body = JSON.parse(event.body ?? '{}') as { source?: string, args?: { user_id?: string } }
+    logger.log(`Received event: [source=${String(body.source)}, args=${JSON.stringify(body.args)}]`)
     const input: SetupInputDto = {
       apiKey,
-      source: body.source,
-      userId: body.args.user_id
+      source: body.source as string,
+      userId: body.args?.user_id as string
     }
     const output = await setupUseCase.execute(input)
     return {
@@ -42,8 +40,8 @@ export const handler: APIGatewayProxyHandlerV2 = async (event: APIGatewayProxyEv
       },
       body: JSON.stringify({
         message: 'success',
-        task_endpoint: output.taskEndpoint,
-        encrypted_api_key: output.encryptedApiKey
+        task_endpoint: output.taskEndpoint as string,
+        encrypted_api_key: output.encryptedApiKey as string
       })
     }
   } catch (error) {
@@ -55,7 +53,8 @@ export const handler: APIGatewayProxyHandlerV2 = async (event: APIGatewayProxyEv
     }
 
     // Check if the error is related to API Key authentication
-    if (error instanceof UserNotFoundError || error instanceof InvalidApiKeyError) {
+    const errorName = error instanceof Error ? error.name : ''
+    if (errorName === 'UserNotFoundError' || errorName === 'InvalidApiKeyError') {
       return {
         statusCode: HttpStatus.UNAUTHORIZED,
         headers: {

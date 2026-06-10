@@ -30,7 +30,7 @@ export class DynamoApiKeyRepository extends ApiKeyRepository {
   async findByUserId (userId: string): Promise<ApiKeyEntity | null> {
     try {
       const result = await withRetry(async () => {
-        return await this.dynamoDBClient.send(
+        return this.dynamoDBClient.send(
           new QueryCommand({
             TableName: this.tableName,
             IndexName: 'user_id_gsi',
@@ -66,7 +66,7 @@ export class DynamoApiKeyRepository extends ApiKeyRepository {
   async findByApiKey (apiKey: string): Promise<ApiKeyEntity | null> {
     try {
       const result = await withRetry(async () => {
-        return await this.dynamoDBClient.send(
+        return this.dynamoDBClient.send(
           new QueryCommand({
             TableName: this.tableName,
             IndexName: 'api_key_gsi',
